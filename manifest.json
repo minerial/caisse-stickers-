@@ -1,0 +1,10 @@
+{
+  "name": "Ma Caisse Stickers",
+  "short_name": "Caisse Stickers",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf8fc",
+  "theme_color": "#7b3f98",
+  "description": "Caisse de vente de stickers utilisable hors ligne"
+}
