@@ -1,0 +1,11 @@
+{
+  "name": "Ma Caisse Stickers",
+  "short_name": "Caisse Stickers",
+  "description": "Caisse hors ligne pour vendre des stickers en foire",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6fc",
+  "theme_color": "#6d4aff",
+  "icons": []
+}

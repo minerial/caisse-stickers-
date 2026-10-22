@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#6d4aff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ma Caisse Stickers">
+  <link rel="manifest" href="manifest.json">
+  <title>Ma Caisse Stickers</title>
+  <style>
+    :root{--purple:#6d4aff;--ink:#24213a;--muted:#77738b;--bg:#f7f6fc;--line:#e8e5f2;--white:#fff;--pink:#ffdeed}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    header{background:linear-gradient(135deg,#6d4aff,#9a72ff);color:#fff;padding:22px 18px 24px;border-radius:0 0 26px 26px}
+    header .top{display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:23px;margin:0}header p{margin:7px 0 0;opacity:.9;font-size:13px}
+    .pill{background:#ffffff2c;border:1px solid #ffffff55;border-radius:999px;padding:7px 10px;font-size:12px;white-space:nowrap}
+    main{max-width:900px;margin:auto;padding:16px 14px 100px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:-3px}
+    .stat,.panel{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 4px 16px #39277b08}
+    .stat small{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.stat strong{font-size:22px}
+    nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;display:flex;gap:8px;overflow:auto}
+    nav button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;color:var(--muted);font-weight:650;white-space:nowrap}
+    nav button.active{background:var(--ink);border-color:var(--ink);color:#fff}
+    .view{display:none}.view.active{display:block}.section-title{font-size:18px;margin:10px 2px 12px}
+    .products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .product{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;text-align:left;min-height:126px;color:var(--ink);display:flex;flex-direction:column;gap:8px}
+    .product .emoji{font-size:28px}.product strong{font-size:15px}.product small{color:var(--muted)}.product .price{margin-top:auto;color:var(--purple);font-size:17px;font-weight:800}
+    button{font:inherit;cursor:pointer}.primary{background:var(--purple);color:white;border:0;border-radius:13px;padding:12px 15px;font-weight:750}
+    .secondary{background:#f0edff;color:var(--purple);border:0;border-radius:12px;padding:10px 12px;font-weight:700}
+    .danger{background:#fff0f2;color:#b4233b;border:0;border-radius:10px;padding:8px 10px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.field label{font-size:13px;font-weight:700}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:white;color:var(--ink);font:inherit}
+    .row{display:flex;gap:9px;align-items:center}.row>*{flex:1}.panel{margin-bottom:12px}.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:16px}
+    .cart-line,.history-line,.stock-line{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}.cart-line:last-child,.history-line:last-child,.stock-line:last-child{border-bottom:0}
+    .line-info{min-width:0;flex:1}.line-info strong{display:block;font-size:14px}.line-info small{color:var(--muted)}
+    .qty{display:flex;align-items:center;gap:8px}.qty button{border:0;background:#f0edff;color:var(--purple);border-radius:9px;width:30px;height:30px;font-size:18px}
+    .total{display:flex;justify-content:space-between;font-size:20px;font-weight:850;padding:14px 0}.hidden{display:none!important}.notice{font-size:12px;color:var(--muted);line-height:1.5}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.search{margin-bottom:12px}
+    @media(min-width:650px){.products{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,1fr)}main{padding-left:24px;padding-right:24px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="top"><div><h1>✨ Ma Caisse Stickers</h1><p>La petite caisse qui fait de grandes ventes.</p></div><span class="pill" id="network">● Vérification…</span></div>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat"><small>Ventes du jour</small><strong id="todaySales">0,00 €</strong></div>
+    <div class="stat"><small>Nombre de ventes</small><strong id="todayCount">0</strong></div>
+    <div class="stat"><small>Articles en stock</small><strong id="stockCount">0</strong></div>
+  </div>
+  <nav>
+    <button class="active" data-tab="caisse">🛍️ Caisse</button>
+    <button data-tab="produits">🏷️ Produits</button>
+    <button data-tab="historique">🧾 Historique</button>
+    <button data-tab="reglages">⚙️ Réglages</button>
+  </nav>
+
+  <section class="view active" id="view-caisse">
+    <h2 class="section-title">Choisis tes stickers</h2>
+    <input class="field search" id="searchProducts" placeholder="🔎 Rechercher un sticker…" aria-label="Rechercher un sticker">
+    <div class="products" id="productButtons"></div>
+    <h2 class="section-title">🧺 Panier</h2>
+    <div class="panel" id="cart"></div>
+    <div class="panel">
+      <div class="field"><label for="payment">Mode de paiement</label><select id="payment"><option>Espèces</option><option>Carte via SumUp</option><option>Autre</option></select></div>
+      <div class="field"><label for="cashGiven">Espèces reçues (€) — facultatif</label><input id="cashGiven" type="number" min="0" step="0.01" placeholder="Ex. 10,00"></div>
+      <div id="changeDue" class="notice"></div>
+      <div class="total"><span>Total</span><span id="cartTotal">0,00 €</span></div>
+      <button class="primary" style="width:100%" id="completeSale">✅ Valider la vente</button>
+      <p class="notice">Cette version enregistre les ventes sur cet appareil. La synchronisation iPhone/tablette sera ajoutée ensuite.</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-produits">
+    <h2 class="section-title">Ajouter un produit</h2>
+    <div class="panel">
+      <div class="field"><label for="pName">Nom du sticker</label><input id="pName" placeholder="Ex. Petit dragon violet"></div>
+      <div class="row">
+        <div class="field"><label for="pPrice">Prix (€)</label><input id="pPrice" type="number" min="0" step="0.01" placeholder="1,50"></div>
+        <div class="field"><label for="pStock">Stock initial</label><input id="pStock" type="number" min="0" step="1" value="10"></div>
+      </div>
+      <div class="field"><label for="pCategory">Catégorie</label><select id="pCategory"><option>Animaux</option><option>Fantaisie</option><option>Fleurs</option><option>Humour</option><option>Autre</option></select></div>
+      <button class="primary" id="addProduct" style="width:100%">＋ Ajouter au catalogue</button>
+    </div>
+    <h2 class="section-title">Mon catalogue et mon stock</h2><div class="panel" id="stockList"></div>
+  </section>
+
+  <section class="view" id="view-historique">
+    <h2 class="section-title">🧾 Ventes enregistrées</h2>
+    <div class="actions" style="margin-bottom:12px"><button class="secondary" id="exportData">⬇️ Exporter une sauvegarde</button><button class="secondary" id="importButton">⬆️ Importer une sauvegarde</button><input type="file" id="importFile" accept="application/json" class="hidden"></div>
+    <div class="panel" id="historyList"></div>
+    <p class="notice">Astuce : exporte une sauvegarde après chaque foire et conserve-la dans Fichiers. Ne désinstalle pas l'application avant d'avoir sauvegardé tes données.</p>
+  </section>
+
+  <section class="view" id="view-reglages">
+    <h2 class="section-title">⚙️ Réglages et sauvegarde</h2>
+    <div class="panel">
+      <p><strong>Bienvenue dans ta caisse !</strong></p>
+      <p class="notice">Les données sont conservées localement dans le navigateur. Cette première version n'a pas encore de synchronisation automatique entre appareils.</p>
+      <button class="secondary" id="exportSettings" style="width:100%">📦 Exporter mes données</button>
+    </div>
+    <div class="panel">
+      <strong>Réinitialiser les données</strong>
+      <p class="notice">Attention : cette action efface les produits et l'historique de cet appareil. Fais une sauvegarde avant.</p>
+      <button class="danger" id="resetData">Effacer toutes les données</button>
+    </div>
+  </section>
+</main>
+<script>
+const KEY="stickers-caisse-v1";
+const euro=n=>Number(n||0).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
+const uid=()=>Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9);
+const today=()=>new Date().toLocaleDateString("sv-SE");
+let state;
+try{state=JSON.parse(localStorage.getItem(KEY))||null}catch(e){state=null}
+if(!state) state={products:[
+ {id:uid(),name:"Sticker fleur",price:1,stock:20,category:"Fleurs"},
+ {id:uid(),name:"Sticker chat",price:1.5,stock:15,category:"Animaux"},
+ {id:uid(),name:"Sticker magique",price:2,stock:10,category:"Fantaisie"}
+],sales:[]};
+let cart={};
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function renderStats(){
+ const sales=state.sales.filter(s=>s.date===today());
+ document.getElementById("todaySales").textContent=euro(sales.reduce((a,s)=>a+s.total,0));
+ document.getElementById("todayCount").textContent=sales.length;
+ document.getElementById("stockCount").textContent=state.products.reduce((a,p)=>a+Number(p.stock),0);
+}
+function renderProducts(){
+ const q=document.getElementById("searchProducts").value.trim().toLowerCase();
+ const el=document.getElementById("productButtons");el.innerHTML="";
+ const list=state.products.filter(p=>p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q));
+ if(!list.length){el.innerHTML='<div class="empty">Aucun sticker trouvé. Ajoute-le dans Produits ✨</div>';return}
+ list.forEach(p=>{
+  const b=document.createElement("button");b.className="product";b.disabled=p.stock<=0;
+  b.innerHTML=`<span class="emoji">${p.category==="Animaux"?"🐾":p.category==="Fleurs"?"🌸":p.category==="Fantaisie"?"🪄":p.category==="Humour"?"😄":"✨"}</span><strong></strong><small></small><span class="price"></span>`;
+  b.querySelector("strong").textContent=p.name;b.querySelector("small").textContent=p.stock>0?`Stock : ${p.stock}`:"Rupture de stock";b.querySelector(".price").textContent=euro(p.price);
+  if(p.stock<=0)b.style.opacity=".5";
+  b.addEventListener("click",()=>{cart[p.id]=(cart[p.id]||0)+1;renderCart()});el.appendChild(b);
+ });
+}
+function renderCart(){
+ const el=document.getElementById("cart");el.innerHTML="";
+ const items=Object.entries(cart).filter(([id,q])=>q>0);
+ if(!items.length)el.innerHTML='<div class="empty">Ton panier attend ses premiers stickers. 🛍️</div>';
+ items.forEach(([id,q])=>{
+  const p=state.products.find(x=>x.id===id);if(!p)return;
+  const line=document.createElement("div");line.className="cart-line";
+  const info=document.createElement("div");info.className="line-info";const strong=document.createElement("strong");strong.textContent=p.name;const small=document.createElement("small");small.textContent=euro(p.price)+" pièce";info.append(strong,small);
+  const qty=document.createElement("div");qty.className="qty";
+  const minus=document.createElement("button");minus.textContent="−";minus.setAttribute("aria-label","Retirer un exemplaire");
+  const number=document.createElement("strong");number.textContent=q;
+  const plus=document.createElement("button");plus.textContent="+";plus.setAttribute("aria-label","Ajouter un exemplaire");
+  minus.onclick=()=>{cart[id]--;if(cart[id]<=0)delete cart[id];renderCart()};
+  plus.onclick=()=>{if(q<p.stock){cart[id]++;renderCart()}else alert("Stock insuffisant !")};
+  qty.append(minus,number,plus);const price=document.createElement("strong");price.textContent=euro(p.price*q);line.append(info,qty,price);el.appendChild(line);
+ });
+ const total=items.reduce((sum,[id,q])=>sum+(state.products.find(p=>p.id===id)?.price||0)*q,0);
+ document.getElementById("cartTotal").textContent=euro(total);
+ const given=Number(document.getElementById("cashGiven").value);
+ document.getElementById("changeDue").textContent=document.getElementById("payment").value==="Espèces"&&document.getElementById("cashGiven").value!==""?(given>=total?"Monnaie à rendre : "+euro(given-total):"Il manque "+euro(total-given)):"";
+}
+function renderStock(){
+ const el=document.getElementById("stockList");el.innerHTML="";
+ if(!state.products.length){el.innerHTML='<div class="empty">Ton catalogue est vide.</div>';return}
+ state.products.forEach(p=>{
+  const line=document.createElement("div");line.className="stock-line";
+  const info=document.createElement("div");info.className="line-info";const s=document.createElement("strong");s.textContent=p.name;const sm=document.createElement("small");sm.textContent=p.category+" · "+euro(p.price)+" · Stock : "+p.stock;info.append(s,sm);
+  const actions=document.createElement("div");actions.className="actions";
+  const edit=document.createElement("button");edit.className="secondary";edit.textContent="Modifier";edit.onclick=()=>{const name=prompt("Nom du produit :",p.name);if(name===null)return;const price=prompt("Prix en euros :",p.price);if(price===null)return;const stock=prompt("Stock actuel :",p.stock);if(stock===null)return;if(!name.trim()||!Number.isFinite(Number(price))||Number(price)<0||!Number.isInteger(Number(stock))||Number(stock)<0){alert("Valeurs invalides.");return}p.name=name.trim();p.price=Number(price);p.stock=Number(stock);save()};
+  const del=document.createElement("button");del.className="danger";del.textContent="Supprimer";del.onclick=()=>{if(confirm("Supprimer "+p.name+" du catalogue ?")){state.products=state.products.filter(x=>x.id!==p.id);delete cart[p.id];save()}};
+  actions.append(edit,del);line.append(info,actions);el.appendChild(line);
+ });
+}
+function renderHistory(){
+ const el=document.getElementById("historyList");el.innerHTML="";
+ const sales=[...state.sales].reverse();
+ if(!sales.length){el.innerHTML='<div class="empty">Aucune vente pour le moment.</div>';return}
+ sales.forEach(s=>{
+  const line=document.createElement("div");line.className="history-line";
+  const info=document.createElement("div");info.className="line-info";const title=document.createElement("strong");title.textContent=euro(s.total)+" · "+s.payment;const detail=document.createElement("small");detail.textContent=new Date(s.timestamp).toLocaleString("fr-FR")+" · "+s.items.reduce((a,i)=>a+i.qty,0)+" article(s)";info.append(title,detail);
+  const del=document.createElement("button");del.className="danger";del.textContent="Annuler";del.onclick=()=>{if(confirm("Annuler cette vente et remettre les articles en stock ?")){s.items.forEach(i=>{const p=state.products.find(p=>p.id===i.id);if(p)p.stock+=i.qty});state.sales=state.sales.filter(x=>x.id!==s.id);save()}};
+  line.append(info,del);el.appendChild(line);
+ });
+}
+function renderAll(){renderStats();renderProducts();renderCart();renderStock();renderHistory()}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id==="view-"+b.dataset.tab))}));
+document.getElementById("searchProducts").addEventListener("input",renderProducts);
+document.getElementById("cashGiven").addEventListener("input",renderCart);
+document.getElementById("payment").addEventListener("change",renderCart);
+document.getElementById("addProduct").onclick=()=>{
+ const name=document.getElementById("pName").value.trim(),price=Number(document.getElementById("pPrice").value),stock=Number(document.getElementById("pStock").value),category=document.getElementById("pCategory").value;
+ if(!name||document.getElementById("pPrice").value===""||!Number.isFinite(price)||price<0||!Number.isInteger(stock)||stock<0){alert("Vérifie le nom, le prix et le stock.");return}
+ state.products.push({id:uid(),name,price,stock,category});document.getElementById("pName").value="";document.getElementById("pPrice").value="";document.getElementById("pStock").value="10";save();alert("Produit ajouté ✨");
+};
+document.getElementById("completeSale").onclick=()=>{
+ const entries=Object.entries(cart).filter(([id,q])=>q>0);if(!entries.length){alert("Le panier est vide !");return}
+ for(const [id,q] of entries){const p=state.products.find(p=>p.id===id);if(!p||p.stock<q){alert("Stock insuffisant pour "+(p?.name||"un article")+".");return}}
+ const items=entries.map(([id,qty])=>{const p=state.products.find(p=>p.id===id);return{id,name:p.name,price:p.price,qty}});
+ const total=items.reduce((a,i)=>a+i.price*i.qty,0),payment=document.getElementById("payment").value;
+ if(payment==="Espèces"&&document.getElementById("cashGiven").value!==""&&Number(document.getElementById("cashGiven").value)<total){alert("Le montant reçu est inférieur au total.");return}
+ items.forEach(i=>{const p=state.products.find(p=>p.id===i.id);p.stock-=i.qty});
+ state.sales.push({id:uid(),timestamp:new Date().toISOString(),date:today(),items,total,payment});
+ cart={};document.getElementById("cashGiven").value="";save();alert("Vente enregistrée ! 🎉");
+};
+function exportBackup(){
+ const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),state},null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="sauvegarde-caisse-stickers.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.getElementById("exportData").onclick=exportBackup;document.getElementById("exportSettings").onclick=exportBackup;
+document.getElementById("importButton").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj.state||!Array.isArray(obj.state.products)||!Array.isArray(obj.state.sales))throw Error();if(confirm("Remplacer les données actuelles par cette sauvegarde ?")){state=obj.state;cart={};save();alert("Sauvegarde importée !")}}catch(err){alert("Fichier de sauvegarde invalide.")}e.target.value=""};
+document.getElementById("resetData").onclick=()=>{if(confirm("Effacer définitivement les produits et les ventes de cet appareil ?")){state={products:[],sales:[]};cart={};save();alert("Données effacées.")}};
+function network(){document.getElementById("network").textContent=navigator.onLine?"● En ligne":"● Hors ligne";document.getElementById("network").style.background=navigator.onLine?"#ffffff2c":"#8a3b3b55"}
+window.addEventListener("online",network);window.addEventListener("offline",network);
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+network();renderAll();
+</script>
+</body>
+</html>
