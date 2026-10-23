@@ -24,3 +24,22 @@ Les données restent stockées localement sur chaque appareil. La synchronisatio
 - Caisse théorique : fond de caisse de départ + total des ventes.
 - Écart : montant réellement compté - caisse théorique.
 - Le fond de caisse est affiché séparément et n'est pas considéré comme un gain.
+
+
+## Version 6 — ajout rapide des stickers
+- Le champ panneau / présentoir propose les emplacements déjà utilisés dans une liste déroulante (flèche), tout en permettant d’en saisir un nouveau.
+- Le dernier panneau utilisé est mémorisé et prérempli pour le prochain sticker.
+- Le stock et le stock minimum sont initialisés à 1 lors de l’ajout d’un nouveau sticker.
+
+
+## Version 7 — catégories rapides
+- Suggestions de catégories prêtes à l’emploi : Chats, Chiens, Loups, Oiseaux, Chevaux, Animaux, Fleurs, Fantaisie, Humour, Jeux vidéo, Nourriture et Autres.
+- Les catégories personnalisées déjà utilisées sont automatiquement proposées dans la liste.
+- La dernière catégorie choisie est mémorisée et préremplie pour le sticker suivant ; elle reste modifiable.
+
+
+## Version 8 — catégories et panneaux personnalisés
+- Les catégories sont créées par l'utilisatrice en les saisissant; elles sont ensuite mémorisées dans la liste déroulante.
+- Les panneaux / présentoirs sont également mémorisés, sans liste de noms imposée.
+- Le dernier panneau et la dernière catégorie utilisés restent présélectionnés pour accélérer les ajouts.
+- Les listes personnalisées sont incluses dans les exports de sauvegarde et restaurées lors d'un import.
